@@ -24,11 +24,12 @@ create policy "Profiles are insertable by owner"\n  on public.profiles for inser
 
 ## Rodar localmente\n```bash\nnpm install --include=dev\nnpm run dev\n```
 
-## Deploy em Node/Plesk\n```bash\nnpm install --include=dev\nnpm run build\nnpm run start\n```
+## Deploy em Node/Plesk\n```bash\nnpm install --include=dev\nnpm run build\nnpm run start  # respeita a variavel PORT (fallback 3000)\n```
 
 ## Seguranca
 - Nunca exponha `SUPABASE_SERVICE_ROLE_KEY` no cliente.
 - Garanta que apenas chaves publicas (NEXT_PUBLIC_) sejam usadas no navegador.
+
 
 
 
