@@ -1,8 +1,6 @@
 # Next.js + Supabase Auth
 
-## Requisitos
-- Node.js 18+
-- Conta Supabase com Auth habilitado
+## Requisitos\n- Node.js 18+ (testado em Node.js 22.17.1)\n- Conta Supabase com Auth habilitado
 
 ## Configuracao
 1. Clone o projeto e copie `.env.example` para `.env.local`.
@@ -24,20 +22,13 @@ create policy "Profiles are insertable by owner"\n  on public.profiles for inser
 
 ## Variaveis de Ambiente\n- Local: use `.env.local`.\n- Producao (Node/Plesk): exporte as mesmas variaveis no ambiente do servidor, ajustando `NEXT_PUBLIC_SITE_URL` para `https://despesas.famillyoffice.com.br`.
 
-## Rodar localmente
-```bash
-npm install
-npm run dev
-```
+## Rodar localmente\n```bash\nnpm install --include=dev\nnpm run dev\n```
 
-## Deploy em Node/Plesk
-```bash
-npm run build
-npm run start
-```
+## Deploy em Node/Plesk\n```bash\nnpm install --include=dev\nnpm run build\nnpm run start\n```
 
 ## Seguranca
 - Nunca exponha `SUPABASE_SERVICE_ROLE_KEY` no cliente.
 - Garanta que apenas chaves publicas (NEXT_PUBLIC_) sejam usadas no navegador.
+
 
 
