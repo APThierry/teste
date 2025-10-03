@@ -1,30 +1,24 @@
 import { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import supabase from '../lib/supabaseClient';
 import { getSupabaseServerClient } from '../lib/supabaseServer';
+import { getSiteUrl } from '../lib/getSiteUrl';
 
 export const getServerSideProps = async (ctx) => {
   const supabaseServer = getSupabaseServerClient(ctx);
   const {
-    data: { session }
+    data: { session },
   } = await supabaseServer.auth.getSession();
 
   if (session) {
     return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false
-      }
+      redirect: { destination: '/dashboard', permanent: false },
     };
   }
 
-  return {
-    props: {
-      initialSession: session
-    }
-  };
+  return { props: {} };
 };
 
 export default function Signup() {
@@ -32,63 +26,46 @@ export default function Signup() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [info, setInfo] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
     setInfo('');
-
-    if (password !== confirm) {
-      setError('As senhas nao coincidem.');
-      return;
-    }
-
     setLoading(true);
 
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName
-        }
-      }
+      options: { emailRedirectTo: getSiteUrl('/login') },
     });
 
     if (signUpError) {
-      setError(signUpError.message || 'Nao foi possivel criar a conta.');
+      setError(signUpError.message || 'Não foi possível criar a conta.');
       setLoading(false);
       return;
     }
 
-    if (data.session) {
+    // Se a confirmação de e-mail for desativada no Supabase, o usuário já vem autenticado.
+    if (data.user && data.session) {
       try {
         const response = await fetch('/api/profile', {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            full_name: fullName
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name: fullName }),
         });
-
-        if (!response.ok) {
-          throw new Error('Falha ao salvar o perfil.');
-        }
-      } catch (profileError) {
-        setInfo('Conta criada, mas nao conseguimos atualizar o perfil automaticamente.');
+        if (!response.ok) throw new Error('Falha ao salvar o perfil.');
+      } catch {
+        setInfo('Conta criada, mas não conseguimos atualizar o perfil automaticamente.');
       }
-
       setLoading(false);
       await router.replace('/dashboard');
       return;
     }
 
+    // Fluxo padrão com confirmação por e-mail
     setInfo('Verifique seu e-mail para confirmar o cadastro antes de entrar.');
     setLoading(false);
   };
@@ -99,7 +76,7 @@ export default function Signup() {
         <div className="mb-8 flex flex-col items-center gap-4">
           <Image src="/logo.svg" alt="Logo" width={96} height={48} className="h-12 w-auto" priority />
           <h1 className="text-2xl font-semibold text-slate-900">Criar conta</h1>
-          <p className="text-sm text-slate-600">Preencha os dados para comecar a usar o app.</p>
+          <p className="text-sm text-slate-600">Preencha os dados para começar a usar o app.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 rounded-xl bg-white p-8 shadow">
@@ -124,7 +101,7 @@ export default function Signup() {
               type="text"
               placeholder="Opcional"
               value={fullName}
-              onChange={(event) => setFullName(event.target.value)}
+              onChange={(e) => setFullName(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
@@ -139,7 +116,7 @@ export default function Signup() {
               required
               autoComplete="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
@@ -154,22 +131,7 @@ export default function Signup() {
               required
               autoComplete="new-password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="confirm" className="mb-2 block text-sm font-medium text-slate-700">
-              Confirmar senha
-            </label>
-            <input
-              id="confirm"
-              type="password"
-              required
-              autoComplete="new-password"
-              value={confirm}
-              onChange={(event) => setConfirm(event.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
           </div>
@@ -177,14 +139,14 @@ export default function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-500 disabled:bg-blue-400"
+            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-500 disabled:bg-blue-400"
           >
-            {loading ? 'Criando conta...' : 'Criar conta'}
+            {loading ? 'Criando...' : 'Criar conta'}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-600">
-          Ja tem conta?{' '}
+          Já tem conta?{' '}
           <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
             Entrar
           </Link>

@@ -6,15 +6,12 @@ import { getSupabaseServerClient } from '../lib/supabaseServer';
 export const getServerSideProps = async (ctx) => {
   const supabaseServer = getSupabaseServerClient(ctx);
   const {
-    data: { session }
+    data: { session },
   } = await supabaseServer.auth.getSession();
 
   if (!session) {
     return {
-      redirect: {
-        destination: '/login',
-        permanent: false
-      }
+      redirect: { destination: '/login', permanent: false },
     };
   }
 
@@ -30,9 +27,9 @@ export const getServerSideProps = async (ctx) => {
       user: {
         id: session.user.id,
         email: session.user.email,
-        full_name: profileData?.full_name || ''
-      }
-    }
+        full_name: profileData?.full_name || '',
+      },
+    },
   };
 };
 
@@ -86,13 +83,10 @@ function Dashboard({ user }) {
   useEffect(() => {
     const fetchProfile = async () => {
       const response = await fetch('/api/profile');
-      if (!response.ok) {
-        return;
-      }
+      if (!response.ok) return;
       const data = await response.json();
       setFullName(data.full_name || '');
     };
-
     fetchProfile();
   }, []);
 
@@ -104,16 +98,11 @@ function Dashboard({ user }) {
     try {
       const response = await fetch('/api/profile', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ full_name: fullName })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name: fullName }),
       });
 
-      if (!response.ok) {
-        throw new Error('Nao foi possivel atualizar o perfil.');
-      }
-
+      if (!response.ok) throw new Error('Não foi possível atualizar o perfil.');
       setStatus('Perfil atualizado com sucesso.');
     } catch (profileError) {
       setStatus(profileError.message || 'Erro ao atualizar o perfil.');
@@ -138,7 +127,7 @@ function Dashboard({ user }) {
               <span className="text-xl font-semibold">/N</span>
             </div>
             <h1 className="text-2xl font-semibold text-slate-900">Bem-vindo</h1>
-            <p className="text-sm text-slate-600">Voce esta autenticado como {greeting}.</p>
+            <p className="text-sm text-slate-600">Você está autenticado como {greeting}.</p>
           </div>
 
           <form onSubmit={handleUpdateProfile} className="space-y-4">
@@ -150,7 +139,7 @@ function Dashboard({ user }) {
                 id="fullName"
                 type="text"
                 value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Atualize seu nome"
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
               />
@@ -168,7 +157,7 @@ function Dashboard({ user }) {
           </form>
 
           <div className="mt-8 flex flex-col items-center gap-2 border-t border-slate-200 pt-6">
-            <p className="text-xs uppercase tracking-wide text-slate-500">Sessao</p>
+            <p className="text-xs uppercase tracking-wide text-slate-500">Sessão</p>
             <button
               onClick={handleSignOut}
               className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"

@@ -3,23 +3,17 @@ import { getSupabaseServerClient } from '../lib/supabaseServer';
 export const getServerSideProps = async (ctx) => {
   const supabase = getSupabaseServerClient(ctx);
   const {
-    data: { session }
+    data: { session },
   } = await supabase.auth.getSession();
 
   if (session) {
     return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false
-      }
+      redirect: { destination: '/dashboard', permanent: false },
     };
   }
 
   return {
-    redirect: {
-      destination: '/login',
-      permanent: false
-    }
+    redirect: { destination: '/login', permanent: false },
   };
 };
 
