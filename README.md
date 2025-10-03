@@ -22,9 +22,7 @@ create policy "Profiles are viewable by owner"
 create policy "Profiles are insertable by owner"\n  on public.profiles for insert\n  with check (auth.uid() = id);\ncreate policy "Profiles are updatable by owner"\n  on public.profiles for update\n  using (auth.uid() = id);
 ```
 
-## Variaveis de Ambiente
-- Local: use `.env.local`.
-- Producao (Node/Plesk): exporte as mesmas variaveis no ambiente do servidor.
+## Variaveis de Ambiente\n- Local: use `.env.local`.\n- Producao (Node/Plesk): exporte as mesmas variaveis no ambiente do servidor, ajustando `NEXT_PUBLIC_SITE_URL` para `https://despesas.famillyoffice.com.br`.
 
 ## Rodar localmente
 ```bash
@@ -41,4 +39,5 @@ npm run start
 ## Seguranca
 - Nunca exponha `SUPABASE_SERVICE_ROLE_KEY` no cliente.
 - Garanta que apenas chaves publicas (NEXT_PUBLIC_) sejam usadas no navegador.
+
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { getSiteUrl } from '../lib/getSiteUrl';
 import supabase from '../lib/supabaseClient';
 import { getSupabaseServerClient } from '../lib/supabaseServer';
 
@@ -72,7 +73,7 @@ export default function Login({ showGoogle }) {
     setResetting(true);
 
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/login` : undefined
+      redirectTo: getSiteUrl('/login')
     });
 
     if (resetError) {
@@ -90,7 +91,7 @@ export default function Login({ showGoogle }) {
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined
+        redirectTo: getSiteUrl('/dashboard')
       }
     });
 
@@ -196,4 +197,8 @@ export default function Login({ showGoogle }) {
     </div>
   );
 }
+
+
+
+
 
